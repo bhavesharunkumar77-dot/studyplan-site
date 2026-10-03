@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Study Plan Wallpaper</title>
+<style>
+:root{--brand:#39ff88;--brand2:#b36bff;--bg:#0b0d12;--card:#141821;--line:#232a38;--txt:#e8ecf4;--mute:#8791a5;
+--c0:#ff5fa2;--c1:#ffb347;--c2:#e6ff4d;--c3:#4dffd2;--c4:#5fb8ff;--c5:#b36bff;--c6:#ff7a59}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+/* ---------- wallpaper ---------- */
+#wall{display:none;height:100%;padding:3vh 3vw;flex-direction:column;gap:2.2vh;
+background:radial-gradient(1200px 600px at 80% -10%,#171c2b 0%,transparent 60%),var(--bg)}
+.warn{font-size:clamp(26px,4.6vw,76px);font-weight:900;letter-spacing:-.02em;line-height:1.05;color:var(--brand);text-shadow:0 0 28px color-mix(in srgb,var(--brand) 35%,transparent)}
+.sub{display:flex;align-items:center;gap:16px;color:var(--mute);font-size:clamp(12px,1.1vw,18px)}
+.bar{flex:1;height:8px;background:var(--line);border-radius:9px;overflow:hidden;max-width:420px}
+.bar i{display:block;height:100%;background:var(--brand);transition:width .6s}
+.week{flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:1vw;min-height:0}
+.col{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2vh 1vw;display:flex;flex-direction:column;gap:1vh;overflow:hidden}
+.col.today{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand) inset}
+.col h3{font-size:clamp(12px,1.2vw,20px);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);display:flex;justify-content:space-between}
+.col.today h3{color:var(--brand)}
+.t{border-left:4px solid var(--c);padding:.7vh .7vw;border-radius:8px;background:color-mix(in srgb,var(--c) 9%,transparent);font-size:clamp(11px,1.05vw,17px);line-height:1.25}
+.t small{display:block;color:var(--c);opacity:.9;font-size:.85em;margin-bottom:2px}
+.t.main{background:color-mix(in srgb,var(--brand) 18%,transparent);border-left-color:var(--brand);font-weight:700;box-shadow:0 0 18px color-mix(in srgb,var(--brand) 22%,transparent)}
+.t.main small{color:var(--brand)}
+.t.done{opacity:.38;text-decoration:line-through}
+.t.done::after{content:" ✓"}
+.empty{color:#3a4254;font-size:.9em}
+.dayhead{display:flex;align-items:baseline;gap:2vw;color:var(--c)}
+.dn{font-size:clamp(34px,5vw,84px);font-weight:800;letter-spacing:-.02em}
+.dd{font-size:clamp(16px,1.8vw,30px);color:var(--mute)}
+.tl{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.4vh;max-width:62vw;overflow:hidden}
+#wall .tl .t{font-size:clamp(16px,2vw,32px);padding:1.3vh 1.4vw;border-radius:10px}
+#wall .tl .t small{font-size:.7em}
+#wall .empty{font-size:clamp(16px,1.8vw,28px);color:#4a5368}
+/* ---------- admin ---------- */
+#admin{max-width:1000px;margin:0 auto;padding:24px 18px 60px}
+h1{font-size:22px;margin-bottom:4px}
+.note{color:var(--mute);font-size:13px;margin-bottom:18px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+label{font-size:12px;color:var(--mute);display:flex;flex-direction:column;gap:4px}
+input,select,button{font:inherit;color:var(--txt);background:#0e121a;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+input[type=text]{min-width:240px}
+input[type=color]{padding:0;width:42px;height:34px}
+button{cursor:pointer}button:hover{border-color:var(--brand)}
+.primary{background:var(--brand);color:#04110a;border-color:var(--brand);font-weight:700}
+.day{margin-top:14px}.day h4{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin-bottom:6px}
+.item{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;border-left:4px solid var(--c)}
+.item .n{flex:1}.item.done .n{text-decoration:line-through;opacity:.5}
+.tag{font-size:11px;color:var(--brand);border:1px solid var(--brand);border-radius:99px;padding:1px 8px}
+.item .tm{color:var(--mute);font-size:12px;min-width:92px}
+</style>
+</head>
+<body>
+
+<div id="wall"></div>
+
+<div id="admin">
+  <h1>Study Plan — Admin</h1>
+  <p class="note">Add tasks and tick Complete here. The wallpaper view updates live. Week: <b id="wk"></b></p>
+
+  <div class="panel">
+    <div class="row">
+      <label>Day<select id="day"></select></label>
+      <label>From<input type="time" id="t1"></label>
+      <label>To<input type="time" id="t2"></label>
+      <label>Task<input type="text" id="title" placeholder="e.g. Biology – Cell Division revision"></label>
+      <label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="main"> Main task</label>
+      <button class="primary" id="add">Add task</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="row">
+      <label>Brand colour 1 (main task / warning)<input type="color" id="b1"></label>
+      <button id="openw">Open wallpaper view ↗</button>
+      <button id="clr">Clear this week</button>
+    </div>
+    <p class="note" style="margin:10px 0 0">Wallpaper link: <b>your-site.netlify.app/#wallpaper</b>. It reads from the online store, so it works on any device.</p>
+  </div>
+
+  <div id="list"></div>
+</div>
+
+<script>
+const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const API='/api/tasks',$=id=>document.getElementById(id);
+let S={brand:'#39ff88',tasks:[]},PW=localStorage.getItem('studyplan.pw')||'';
+async function load(){
+  try{const r=await fetch(API,{cache:'no-store'});if(r.ok){S=await r.json();localStorage.setItem('studyplan.cache',JSON.stringify(S));return}}catch(e){}
+  try{const c=localStorage.getItem('studyplan.cache');if(c)S=JSON.parse(c)}catch(e){}
+}
+async function save(){
+  if(!PW){PW=prompt('Admin password')||'';localStorage.setItem('studyplan.pw',PW)}
+  try{const r=await fetch(API,{method:'POST',headers:{'content-type':'application/json','x-admin-key':PW},body:JSON.stringify(S)});
+    if(r.status===401){localStorage.removeItem('studyplan.pw');PW='';alert('Wrong password - change not saved');await load();renderAdmin()}
+  }catch(e){alert('Could not save - check internet')}
+}
+function weekStart(d=new Date()){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  x.setDate(x.getDate()-((x.getDay()+6)%7));return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')}
+function fmtDate(s,i){const d=new Date(s+'T00:00');d.setDate(d.getDate()+i);return d.toLocaleDateString(undefined,{day:'numeric',month:'short'})}
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const thisWeek=()=>S.tasks.filter(t=>t.week===weekStart()).sort((a,b)=>(a.t1||'').localeCompare(b.t1||''));
+const when=t=>t.t1?(t.t2?t.t1+' – '+t.t2:t.t1):'Anytime';
+
+function renderWall(){
+  document.documentElement.style.setProperty('--brand',S.brand);
+  const i=(new Date().getDay()+6)%7,ts=thisWeek().filter(t=>t.day===i),done=ts.filter(t=>t.done).length;
+  $('wall').innerHTML=`<div class="warn">Stick to the plan and not to the mood.</div>
+  <div class="dayhead" style="--c:var(--c${i})"><span class="dn">${DAYS[i]}</span><span class="dd">${fmtDate(weekStart(),i)}</span></div>
+  <div class="sub"><span>${done} of ${ts.length} done today</span><div class="bar"><i style="width:${ts.length?done/ts.length*100:0}%"></i></div></div>
+  <div class="tl">`+(ts.length?ts.map(t=>`<div class="t${t.main?' main':''}${t.done?' done':''}" style="--c:var(--c${i})"><small>${when(t)}</small>${esc(t.title)}</div>`).join(''):'<div class="empty">No tasks planned today</div>')+'</div>';
+}
+
+function renderAdmin(){
+  $('wk').textContent=fmtDate(weekStart(),0)+' – '+fmtDate(weekStart(),6);
+  $('b1').value=S.brand;
+  document.documentElement.style.setProperty('--brand',S.brand);
+  const ts=thisWeek();
+  $('list').innerHTML=DAYS.map((d,i)=>{
+    const items=ts.filter(t=>t.day===i);
+    return `<div class="day"><h4>${d} · ${fmtDate(weekStart(),i)}</h4>`+
+    (items.length?items.map(t=>`<div class="item${t.done?' done':''}" style="--c:var(--c${i})">
+      <input type="checkbox" ${t.done?'checked':''} data-done="${t.id}" title="Complete">
+      <span class="tm">${when(t)}</span><span class="n">${esc(t.title)}</span>
+      ${t.main?'<span class="tag">MAIN</span>':''}<button data-del="${t.id}">✕</button></div>`).join(''):'<div class="note">No tasks</div>')+'</div>';
+  }).join('');
+}
+
+async function init(){
+  await load();
+  const wall=location.hash==='#wallpaper'||location.search.includes('wallpaper');
+  if(wall){$('admin').style.display='none';$('wall').style.display='flex';renderWall();
+    setInterval(async()=>{await load();renderWall()},5000);
+  }else{
+    DAYS.forEach((d,i)=>$('day').add(new Option(d,i)));
+    $('day').value=(new Date().getDay()+6)%7;
+    renderAdmin();
+    $('add').onclick=async()=>{const title=$('title').value.trim();if(!title)return;
+      S.tasks.push({id:Date.now(),week:weekStart(),day:+$('day').value,t1:$('t1').value,t2:$('t2').value,title,main:$('main').checked,done:false});
+      $('title').value='';$('main').checked=false;renderAdmin();await save()};
+    $('list').onchange=async e=>{const id=e.target.dataset.done;if(!id)return;S.tasks.find(t=>t.id==id).done=e.target.checked;renderAdmin();await save()};
+    $('list').onclick=async e=>{const id=e.target.dataset.del;if(!id)return;S.tasks=S.tasks.filter(t=>t.id!=id);renderAdmin();await save()};
+    $('b1').oninput=e=>{S.brand=e.target.value;renderAdmin()};
+    $('b1').onchange=()=>save();
+    $('clr').onclick=async()=>{if(confirm('Remove all tasks for this week?')){S.tasks=S.tasks.filter(t=>t.week!==weekStart());renderAdmin();await save()}};
+    $('openw').onclick=()=>window.open(location.origin+'/#wallpaper','_blank');
+  }
+}
+init();
+</script>
+</body>
+</html>
